@@ -44,7 +44,7 @@ const pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
 
 const exrLoader = new EXRLoader();
-exrLoader.load("/textures/exr/clearsky.exr", (texture) => {
+exrLoader.load("textures/exr/clearsky.exr", (texture) => {
   const envMap = pmremGenerator.fromEquirectangular(texture).texture;
   scene.environment = envMap; // Set environment for reflections
   scene.background = envMap; // Set EXR as background
@@ -55,7 +55,7 @@ exrLoader.load("/textures/exr/clearsky.exr", (texture) => {
 // Load main model ------------------------------------------------------------------Axel bara mesh
 const loader = new GLTFLoader();
 loader.load(
-  "/models/gamstan12.glb",
+  "models/gamstan12.glb",
   (gltf) => {
     const model = gltf.scene;
     model.traverse((child) => {
@@ -114,7 +114,7 @@ document.addEventListener("wheel", (event) => {
 });
 
 // Load GLB camera model with animation ------------------------ BARA CAMERA Animation INGET ANNAT!!!!!
-loader.load("/models/gamcamera6.glb", (gltf) => {
+loader.load("models/gamcamera6.glb", (gltf) => {
   if (gltf.cameras.length > 0) {
     camera = gltf.cameras[0]; // Assign the loaded camera
     renderer.setSize(window.innerWidth, window.innerHeight);
