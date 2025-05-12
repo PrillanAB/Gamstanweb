@@ -1,11 +1,11 @@
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
-import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
-import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
-import { Color } from "three";
+import * as THREE from "https://unpkg.com/three@0.155.0/build/three.module.js";
+import { OrbitControls } from "https://unpkg.com/three@0.155.0/examples/jsm/controls/OrbitControls.js";
+import { GLTFLoader } from "https://unpkg.com/three@0.155.0/examples/jsm/loaders/GLTFLoader.js";
+import { EffectComposer } from "https://unpkg.com/three@0.155.0/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "https://unpkg.com/three@0.155.0/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "https://unpkg.com/three@0.155.0/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { EXRLoader } from "https://unpkg.com/three@0.155.0/examples/jsm/loaders/EXRLoader.js";
+import { Color } from "https://unpkg.com/three@0.155.0/build/three.module.js";
 
 // Create scene
 const scene = new THREE.Scene();
