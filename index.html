@@ -1,0 +1,1146 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Gamla stan</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+                font-family: 'Inter', sans-serif;
+                color: white;
+            }
+
+            .main-title {
+                position: fixed;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 120px;
+                font-weight: 800;
+                letter-spacing: 10px;
+                margin: 0;
+                z-index: 100;
+                white-space: nowrap;
+                opacity: 1;
+                transition: opacity 0.4s ease;
+                pointer-events: none;
+            }
+
+            .main-title.scrolled {
+                top: 5%;
+                font-size: 40px;
+                letter-spacing: 3px;
+            }
+
+            #three-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+            }
+
+            .dock-container {
+                display: none;
+            }
+
+            .dock-button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255,255,255,0.22);
+                border: 1.5px solid rgba(255,255,255,0.32);
+                color: white;
+                font-size: 18px;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                cursor: pointer;
+                transition: all 0.22s cubic-bezier(.4,1,.7,1);
+                box-shadow: 0 2px 12px 0 rgba(0,0,0,0.10);
+                border-radius: 24px;
+                padding: 10px 28px;
+                outline: none;
+                margin-bottom: 0;
+                min-width: 80px;
+                backdrop-filter: blur(12px) saturate(160%);
+            }
+
+            .dock-button:hover {
+                background: rgba(255,255,255,0.32);
+                transform: translateY(-2px) scale(1.08);
+                color: #fff;
+            }
+
+            .dock-button svg, .dock-label {
+                display: none !important;
+            }
+
+            .modal-overlay {
+                display: none;
+            }
+
+            .team-modal {
+                display: none;
+            }
+
+            .info-modal {
+                display: none;
+            }
+
+            .close-modal {
+                display: none;
+            }
+
+            .team-grid {
+                display: none;
+            }
+
+            .info-grid {
+                display: none;
+            }
+
+            .profile-icon {
+                width: 150px;
+                height: 150px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                margin: 0 auto 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 40px;
+                transition: transform 0.3s ease, background 0.3s ease;
+            }
+
+            .team-member:hover .profile-icon {
+                transform: translateY(-5px);
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+            .team-member h3 {
+                color: white;
+                margin: 0 0 5px 0;
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .team-member p {
+                color: rgba(255, 255, 255, 0.7);
+                margin: 0;
+                font-size: 14px;
+            }
+
+            .info-section {
+                background: rgba(0, 0, 0, 0.4);
+                padding: 25px;
+                border-radius: 15px;
+                transition: transform 0.3s ease, background 0.3s ease;
+                opacity: 1;
+                visibility: visible;
+                position: relative;
+                z-index: 1002;
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                display: flex;
+                gap: 25px;
+                align-items: flex-start;
+            }
+
+            .info-section:hover {
+                transform: translateY(-5px);
+                background: rgba(0, 0, 0, 0.5);
+            }
+
+            .info-section-content {
+                flex: 1;
+            }
+
+            .info-section-image {
+                width: 150px;
+                height: 180px;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.1);
+                overflow: hidden;
+                position: relative;
+                flex-shrink: 0;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                cursor: pointer;
+            }
+
+            .info-section-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 10px;
+                transition: transform 0.3s ease;
+            }
+
+            .info-section:hover .info-section-image {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            }
+
+            .info-section:hover .info-section-image img {
+                transform: scale(1.05);
+            }
+
+            .info-section-image::before {
+                content: 'Image';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: rgba(255, 255, 255, 0.5);
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+            .info-section h3 {
+                color: white;
+                margin: 0 0 15px 0;
+                font-size: 18px;
+                font-weight: 600;
+                letter-spacing: 1px;
+                opacity: 1;
+                visibility: visible;
+                position: relative;
+                z-index: 1003;
+            }
+
+            .info-section p {
+                color: rgba(255, 255, 255, 0.9);
+                margin: 0;
+                font-size: 14px;
+                line-height: 1.6;
+                opacity: 1;
+                visibility: visible;
+                position: relative;
+                z-index: 1003;
+            }
+
+            .tech-stack {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 15px;
+                opacity: 1;
+                visibility: visible;
+                position: relative;
+                z-index: 1003;
+            }
+
+            .tech-tag {
+                background: rgba(0, 0, 0, 0.4);
+                padding: 5px 12px;
+                border-radius: 15px;
+                font-size: 12px;
+                color: white;
+                letter-spacing: 1px;
+                opacity: 1;
+                visibility: visible;
+                position: relative;
+                z-index: 1004;
+                backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+            }
+
+            .loading-screen {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: #000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                transition: opacity 0.5s ease, visibility 0.5s ease;
+            }
+
+            .loading-screen.fade-out {
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            .loading-content {
+                width: 100%;
+                height: 100%;
+                position: relative;
+            }
+
+            .progress-container {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, calc(50% + 100px));
+                width: 90%;
+                max-width: 1200px;
+            }
+
+            .progress-bar {
+                width: 100%;
+                height: 6px;
+                background: rgba(255, 255, 255, 0.1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .progress-fill {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 0%;
+                background: white;
+                transition: width 0.1s ease;
+            }
+
+            .progress-text {
+                position: absolute;
+                bottom: 60px;
+                left: 60px;
+                color: white;
+                font-size: 32px;
+                font-weight: 600;
+                letter-spacing: 2px;
+                font-family: 'Inter', sans-serif;
+            }
+
+            .loading-title {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                color: white;
+                font-size: 120px;
+                font-weight: 800;
+                letter-spacing: 10px;
+                margin: 0;
+                white-space: nowrap;
+                clip-path: inset(0 100% 0 0);
+                transition: clip-path 0.1s ease;
+            }
+
+            /* Hide content until loaded */
+            .content-container {
+                opacity: 0;
+                transition: opacity 0.5s ease;
+            }
+
+            .content-container.visible {
+                opacity: 1;
+            }
+
+            .scroll-section {
+                position: fixed;
+                right: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(12px);
+                border-radius: 12px;
+                padding: 20px 12px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 20px;
+                z-index: 1200;
+                border: 1px solid rgba(255,255,255,0.1);
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            }
+
+            .scroll-indicator-container {
+                width: 8px;
+                height: 300px;
+                background: rgba(255,255,255,0.12);
+                border-radius: 6px;
+                display: flex;
+                align-items: flex-start;
+                overflow: hidden;
+                backdrop-filter: blur(8px);
+                border: 1px solid rgba(255,255,255,0.15);
+            }
+
+            .scroll-indicator-bar {
+                width: 100%;
+                background: linear-gradient(180deg, #fff 0%, #b3c6ff 100%);
+                border-radius: 6px;
+                transition: height 0.18s cubic-bezier(.4,1,.7,1);
+                position: relative;
+            }
+
+            .scroll-indicator-bar::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(180deg, 
+                    rgba(255,255,255,0.3) 0%,
+                    rgba(255,255,255,0) 50%,
+                    rgba(255,255,255,0.3) 100%
+                );
+                pointer-events: none;
+            }
+
+            .page {
+                position: fixed;
+                top: 20%;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 2rem;
+                color: white;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.4s;
+                z-index: 1000;
+                width: 80%;
+                max-width: 1000px;
+                text-align: center;
+                visibility: visible;
+                display: block;
+            }
+
+            .page.active {
+                opacity: 1;
+                pointer-events: auto;
+                visibility: visible;
+                display: block;
+            }
+
+            #rippleOverlay {
+                position: fixed;
+                left: 0; top: 0;
+                width: 100vw; height: 100vh;
+                pointer-events: none;
+                z-index: 99999;
+                mix-blend-mode: lighten;
+            }
+
+            .koneqt-label {
+                position: fixed;
+                top: 32px;
+                right: 40px;
+                font-size: 2rem;
+                font-weight: 700;
+                color: #fff;
+                letter-spacing: 2px;
+                opacity: 0.85;
+                z-index: 1200;
+                pointer-events: none;
+                user-select: none;
+                text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+                font-family: 'Inter', Arial, sans-serif;
+            }
+
+            .scroll-explore {
+                position: fixed;
+                bottom: 40px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+                z-index: 1200;
+                opacity: 1;
+                pointer-events: none;
+            }
+
+            .scroll-explore-text {
+                color: rgba(255,255,255,0.8);
+                font-size: 14px;
+                font-weight: 500;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            .scroll-explore-arrow {
+                width: 24px;
+                height: 24px;
+                border-right: 2px solid rgba(255,255,255,0.8);
+                border-bottom: 2px solid rgba(255,255,255,0.8);
+                transform: rotate(45deg);
+                animation: wiggle 2s infinite;
+            }
+
+            @keyframes wiggle {
+                0%, 100% {
+                    transform: rotate(45deg) translateY(0);
+                }
+                50% {
+                    transform: rotate(45deg) translateY(8px);
+                }
+            }
+
+            .page-indicators {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                order: -1;
+            }
+
+            .page-indicator {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                cursor: pointer;
+                flex-direction: row-reverse;
+            }
+
+            .page-indicator-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.3);
+                transition: all 0.3s ease;
+            }
+
+            .page-indicator-label {
+                color: rgba(255,255,255,0.5);
+                font-size: 14px;
+                font-weight: 500;
+                letter-spacing: 1px;
+                transition: all 0.3s ease;
+                text-align: right;
+            }
+
+            .page-indicator.active .page-indicator-dot {
+                background: #fff;
+                transform: scale(1.2);
+                box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            }
+
+            .page-indicator.active .page-indicator-label {
+                color: #fff;
+            }
+
+            .info-content {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+                margin-top: 30px;
+                opacity: 1;
+                visibility: visible;
+                position: relative;
+                z-index: 1001;
+                max-width: 1400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            @media (max-width: 1200px) {
+                .info-content {
+                    grid-template-columns: 1fr;
+                    max-width: 800px;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .dock-container {
+                    gap: 12px;
+                    bottom: 20px;
+                }
+
+                .dock-button {
+                    padding: 8px 16px;
+                    font-size: 14px;
+                    min-width: 60px;
+                }
+
+                .main-title {
+                    font-size: 60px;
+                }
+
+                .main-title.scrolled {
+                    top: 4%;
+                    font-size: 28px;
+                    letter-spacing: 2px;
+                }
+
+                .team-grid {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .info-grid {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .team-modal, .info-modal {
+                    width: 90%;
+                    padding: 20px;
+                }
+
+                .loading-title {
+                    font-size: 60px;
+                }
+
+                .progress-text {
+                    font-size: 24px;
+                }
+
+                .koneqt-label {
+                    font-size: 1.5rem;
+                    top: 20px;
+                    right: 20px;
+                }
+
+                .scroll-section {
+                    right: 12px;
+                    padding: 16px 8px;
+                    gap: 16px;
+                }
+
+                .scroll-indicator-container {
+                    width: 6px;
+                    height: 240px;
+                }
+
+                .page-indicator-dot {
+                    width: 6px;
+                    height: 6px;
+                }
+
+                .page-indicator-label {
+                    font-size: 12px;
+                }
+
+                .info-section {
+                    flex-direction: column;
+                    gap: 15px;
+                }
+
+                .info-section-image {
+                    width: 100%;
+                    height: 140px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .dock-container {
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    width: 90%;
+                }
+
+                .dock-button {
+                    flex: 1 1 calc(50% - 12px);
+                    min-width: 0;
+                }
+
+                .main-title {
+                    font-size: 40px;
+                }
+
+                .main-title.scrolled {
+                    top: 8%;
+                    font-size: 40px;
+                    letter-spacing: 3px;
+                }
+
+                .loading-title {
+                    font-size: 40px;
+                }
+            }
+
+            .image-modal-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0,0,0,0.75);
+                z-index: 99999;
+                justify-content: center;
+                align-items: center;
+                transition: opacity 0.3s;
+            }
+            .image-modal-overlay.active {
+                display: flex;
+            }
+            .image-modal-content {
+                position: relative;
+                max-width: 90vw;
+                max-height: 90vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .image-modal-content img {
+                max-width: 90vw;
+                max-height: 80vh;
+                border-radius: 16px;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+                background: #222;
+            }
+            .image-modal-close {
+                position: absolute;
+                top: 12px;
+                right: 18px;
+                font-size: 2rem;
+                color: #fff;
+                background: rgba(0,0,0,0.4);
+                border: none;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                z-index: 2;
+                transition: background 0.2s;
+            }
+            .image-modal-close:hover {
+                background: rgba(0,0,0,0.7);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loading-content">
+                <div class="loading-title" id="loadingTitle">GAMLA STAN</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+        </div>
+
+        <div class="content-container" id="contentContainer">
+            <div id="three-container"></div>
+            <h1 class="main-title">GAMLA STAN</h1>
+
+            <div class="scroll-section">
+                <div class="page-indicators">
+                    <div class="page-indicator" data-page="1">
+                        <div class="page-indicator-dot"></div>
+                        <div class="page-indicator-label">WELCOME</div>
+                    </div>
+                    <div class="page-indicator" data-page="2">
+                        <div class="page-indicator-dot"></div>
+                        <div class="page-indicator-label">APARTMENTS</div>
+                    </div>
+                    <div class="page-indicator" data-page="3">
+                        <div class="page-indicator-dot"></div>
+                        <div class="page-indicator-label">CONTACT</div>
+                    </div>
+                    <div class="page-indicator" data-page="4">
+                        <div class="page-indicator-dot"></div>
+                        <div class="page-indicator-label">INFO</div>
+                    </div>
+                </div>
+                <div class="scroll-indicator-container">
+                    <div class="scroll-indicator-bar" id="scrollIndicatorBar" style="height:0%"></div>
+                </div>
+            </div>
+
+            <div class="page" id="page1">
+                <h2 style="color: white; margin-top: 0; font-size: 24px; letter-spacing: 2px;">WELCOME TO GAMLA STAN</h2>
+                <div class="info-content">
+                    <div class="info-section">
+                        <h3>Stockholm Old Town</h3>
+                        <p>Old Town (Gamla Stan) is Stockholm's original city centre and consists of Stadsholmen island and the islets of Riddarholmen, Helgeandsholmen and Strömsborg.</p>
+                    </div>
+                    <div class="info-section">
+                        <h3>Highlights</h3>
+                        <p>Stortorget is the main square and all the big attractions lead off it, including the baroque style Royal Palace (Kungliga Slottet) and The Royal Chapel (Storkyrkan) around the corner, where Crown Princess Victoria married Daniel Westling in June 2010.</p>
+                    </div>
+                    <div class="info-section">
+                        <h3>Old Town today</h3>
+                        <p>Some 3,000 people live in the Old Town and it is packed with cafés, restaurants, tourist shops, studios, galleries and museums, including the Nobel Prize Museum and the Post Museum.</p>
+                    </div>
+                    <div class="info-section">
+                        <h3>Don't miss</h3>
+                        <p>Changing of the guards takes place daily outside the Royal Palace and in the summer months, you listen to a military band and see the horse parade. You can also celebrate King Carl Gustaf XVI birthday on 30 April here. Eat at one of the world's and Stockholm's oldest restaurants Den Gyldene Freden, opened in 1722 and famed for its traditional Swedish fare.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="page" id="page2">
+                <h2 style="color: white; margin-top: 0; font-size: 24px; letter-spacing: 2px;">EXCLUSIVE APARTMENTS</h2>
+                <div class="info-content">
+                    <div class="info-section">
+                        <div class="info-section-content">
+                            <h3>VÄSTERLÅNGGATAN 42</h3>
+                            <p>• 2-bedroom apartment with sea view<br>
+                               • 85m² living space<br>
+                               • Original 17th century details<br>
+                               • Modern kitchen and bathroom<br>
+                               • Private balcony facing the harbor</p>
+                            <div class="tech-stack">
+                                <span class="tech-tag">8.5M SEK</span>
+                                <span class="tech-tag">VIEW DETAILS</span>
+                            </div>
+                        </div>
+                        <div class="info-section-image">
+                            <img src="/images/apart1.png" alt="Västerlånggatan 42">
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-section-content">
+                            <h3>STORTORGET 15</h3>
+                            <p>• 3-bedroom townhouse with garden<br>
+                               • 120m² living space<br>
+                               • Historic merchant's house<br>
+                               • Private courtyard garden<br>
+                               • Located on the main square</p>
+                            <div class="tech-stack">
+                                <span class="tech-tag">12.5M SEK</span>
+                                <span class="tech-tag">VIEW DETAILS</span>
+                            </div>
+                        </div>
+                        <div class="info-section-image">
+                            <img src="/images/apart2.png" alt="Stortorget 15">
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-section-content">
+                            <h3>PRÄSTGATAN 28</h3>
+                            <p>• 1-bedroom studio in historic building<br>
+                               • 45m² living space<br>
+                               • Recently renovated<br>
+                               • High ceilings and large windows<br>
+                               • Perfect for investment</p>
+                            <div class="tech-stack">
+                                <span class="tech-tag">4.2M SEK</span>
+                                <span class="tech-tag">VIEW DETAILS</span>
+                            </div>
+                        </div>
+                        <div class="info-section-image">
+                            <img src="/images/apart3.png" alt="Prästgatan 28">
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-section-content">
+                            <h3>KÖPMANTORGET 12</h3>
+                            <p>• Penthouse with terrace<br>
+                               • 150m² living space<br>
+                               • 360° city views<br>
+                               • Private roof terrace<br>
+                               • Luxury finishes throughout</p>
+                            <div class="tech-stack">
+                                <span class="tech-tag">15.8M SEK</span>
+                                <span class="tech-tag">VIEW DETAILS</span>
+                            </div>
+                        </div>
+                        <div class="info-section-image">
+                            <img src="/images/apart4.png" alt="Köpmantorget 12">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page" id="page3">
+                <h2 style="color: white; margin-top: 0; font-size: 24px; letter-spacing: 2px;">CONTACT US</h2>
+                <div class="info-content">
+                    <div class="info-section">
+                        <h3>GET IN TOUCH</h3>
+                        <p>We'd love to hear from you! Whether you have a question about our services, want to discuss a potential project, or just want to say hello, feel free to reach out.</p>
+                    </div>
+                    <div class="info-section">
+                        <h3>EMAIL</h3>
+                        <p>hello@gamlastan.com</p>
+                    </div>
+                    <div class="info-section">
+                        <h3>LOCATION</h3>
+                        <p>Stockholm, Sweden</p>
+                    </div>
+                    <div class="info-section">
+                        <h3>SOCIAL</h3>
+                        <div class="tech-stack">
+                            <span class="tech-tag">TWITTER</span>
+                            <span class="tech-tag">LINKEDIN</span>
+                            <span class="tech-tag">INSTAGRAM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page" id="page4">
+                <h2 style="color: white; margin-top: 0; font-size: 24px; letter-spacing: 2px;">ABOUT THIS SITE</h2>
+                <div class="info-content">
+                    <div class="info-section">
+                        <h3>OVERVIEW</h3>
+                        <p>A modern, interactive web experience showcasing the power of Three.js and modern web technologies. The site features dynamic 3D graphics, smooth animations, and a responsive design.</p>
+                    </div>
+                    <div class="info-section">
+                        <h3>TECHNICAL STACK</h3>
+                        <p>Built with cutting-edge web technologies for optimal performance and visual appeal.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">THREE.JS</span>
+                            <span class="tech-tag">HTML5</span>
+                            <span class="tech-tag">CSS3</span>
+                            <span class="tech-tag">JAVASCRIPT</span>
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <h3>FEATURES</h3>
+                        <p>• Interactive 3D background<br>
+                           • Responsive design<br>
+                           • Modern UI/UX<br>
+                           • Smooth animations<br>
+                           • Modal interactions</p>
+                    </div>
+                    <div class="info-section">
+                        <h3>PERFORMANCE</h3>
+                        <p>Optimized for modern browsers with hardware acceleration. The site uses efficient rendering techniques and smooth transitions for the best possible user experience.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="koneqt-label">koneqt</div>
+            <div class="scroll-explore">
+                <div class="scroll-explore-text">Scroll to explore</div>
+                <div class="scroll-explore-arrow"></div>
+            </div>
+        </div>
+
+        <canvas id="rippleOverlay"></canvas>
+
+        <!-- Image Modal -->
+        <div class="image-modal-overlay" id="imageModalOverlay">
+            <div class="image-modal-content">
+                <button class="image-modal-close" id="imageModalClose" aria-label="Close">&times;</button>
+                <img id="imageModalImg" src="" alt="Apartment large view">
+            </div>
+        </div>
+
+        <!-- Load your main.js file -->
+        <script type="module" src="/src/main.js"></script>
+
+        <script>
+            // Loading screen functionality
+            document.addEventListener('DOMContentLoaded', () => {
+                const loadingScreen = document.getElementById('loadingScreen');
+                const progressFill = document.getElementById('progressFill');
+                const progressText = document.getElementById('progressText');
+                const contentContainer = document.getElementById('contentContainer');
+                const loadingTitle = document.getElementById('loadingTitle');
+                
+                let progress = 0;
+                const duration = 1000; // 1.5 seconds
+                const interval = 10;
+                const steps = duration / interval;
+                const increment = 100 / steps;
+
+                const updateProgress = () => {
+                    progress += increment;
+                    if (progress > 100) progress = 100;
+                    
+                    progressFill.style.width = `${progress}%`;
+                    progressText.textContent = `${Math.round(progress)}%`;
+                    
+                    // Reveal text based on progress
+                    loadingTitle.style.clipPath = `inset(0 ${100 - progress}% 0 0)`;
+
+                    if (progress === 100) {
+                        setTimeout(() => {
+                            loadingScreen.classList.add('fade-out');
+                            contentContainer.classList.add('visible');
+                            // Show welcome page
+                            document.getElementById('page1').classList.add('active');
+                        }, 200);
+                    } else {
+                        setTimeout(updateProgress, interval);
+                    }
+                };
+
+                // Start the progress animation
+                setTimeout(updateProgress, interval);
+            });
+
+            // Virtual scroll fade effect
+            document.addEventListener('DOMContentLoaded', () => {
+                const mainTitle = document.querySelector('.main-title');
+                const scrollIndicatorBar = document.getElementById('scrollIndicatorBar');
+                const fadeThresholdTitle = 0.08;
+                const pageIndicators = document.querySelectorAll('.page-indicator');
+                const pages = document.querySelectorAll('.page');
+
+                // Touch event handling for mobile
+                let touchStartY = 0;
+                let touchEndY = 0;
+                let touchStartTime = 0;
+                let touchEndTime = 0;
+                let currentProgress = 0;
+
+                // Function to update page visibility
+                function updatePageVisibility(progress) {
+                    const pageThreshold1 = 0.25; // First threshold (Welcome -> Sales)
+                    const pageThreshold2 = 0.5;  // Second threshold (Sales -> Contact)
+                    const pageThreshold3 = 0.75; // Third threshold (Contact -> Info)
+                    
+                    if (progress < pageThreshold1) {
+                        document.getElementById('page1').classList.add('active');
+                        document.getElementById('page2').classList.remove('active');
+                        document.getElementById('page3').classList.remove('active');
+                        document.getElementById('page4').classList.remove('active');
+                    } else if (progress < pageThreshold2) {
+                        document.getElementById('page1').classList.remove('active');
+                        document.getElementById('page2').classList.add('active');
+                        document.getElementById('page3').classList.remove('active');
+                        document.getElementById('page4').classList.remove('active');
+                    } else if (progress < pageThreshold3) {
+                        document.getElementById('page1').classList.remove('active');
+                        document.getElementById('page2').classList.remove('active');
+                        document.getElementById('page3').classList.add('active');
+                        document.getElementById('page4').classList.remove('active');
+                    } else {
+                        document.getElementById('page1').classList.remove('active');
+                        document.getElementById('page2').classList.remove('active');
+                        document.getElementById('page3').classList.remove('active');
+                        document.getElementById('page4').classList.add('active');
+                    }
+                }
+
+                document.addEventListener('touchstart', (e) => {
+                    touchStartY = e.touches[0].clientY;
+                    touchStartTime = Date.now();
+                }, { passive: true });
+
+                document.addEventListener('touchmove', (e) => {
+                    touchEndY = e.touches[0].clientY;
+                    const deltaY = touchStartY - touchEndY;
+                    const screenHeight = window.innerHeight;
+                    
+                    // Calculate progress based on touch movement
+                    const progressDelta = deltaY / (screenHeight * 2);
+                    const newProgress = Math.max(0, Math.min(1, currentProgress + progressDelta));
+                    
+                    // Update animation progress
+                    if (window.updateAnimationProgress) {
+                        window.updateAnimationProgress(newProgress);
+                    }
+                    
+                    e.preventDefault();
+                }, { passive: false });
+
+                document.addEventListener('touchend', () => {
+                    touchEndTime = Date.now();
+                    const touchDuration = touchEndTime - touchStartTime;
+                    const swipeDistance = touchEndY - touchStartY;
+                    
+                    if (touchDuration < 300 && Math.abs(swipeDistance) > 50) {
+                        const momentum = swipeDistance / (screenHeight * 2);
+                        const targetProgress = Math.max(0, Math.min(1, currentProgress + momentum));
+                        
+                        const startProgress = currentProgress;
+                        const duration = 500;
+                        const startTime = Date.now();
+                        
+                        function animateMomentum() {
+                            const elapsed = Date.now() - startTime;
+                            const progress = Math.min(1, elapsed / duration);
+                            const easedProgress = progress < 0.5 
+                                ? 2 * progress * progress 
+                                : -1 + (4 - 2 * progress) * progress;
+                            
+                            const newProgress = startProgress + (targetProgress - startProgress) * easedProgress;
+                            
+                            if (window.updateAnimationProgress) {
+                                window.updateAnimationProgress(newProgress);
+                            }
+                            
+                            if (progress < 1) {
+                                requestAnimationFrame(animateMomentum);
+                            }
+                        }
+                        
+                        animateMomentum();
+                    }
+                }, { passive: true });
+
+                // Update page indicators based on scroll progress
+                function updatePageIndicators(progress) {
+                    const pageThreshold1 = 0.25;
+                    const pageThreshold2 = 0.5;
+                    const pageThreshold3 = 0.75;
+                    
+                    pageIndicators.forEach((indicator, index) => {
+                        if ((index === 0 && progress < pageThreshold1) || 
+                            (index === 1 && progress >= pageThreshold1 && progress < pageThreshold2) ||
+                            (index === 2 && progress >= pageThreshold2 && progress < pageThreshold3) ||
+                            (index === 3 && progress >= pageThreshold3)) {
+                            indicator.classList.add('active');
+                        } else {
+                            indicator.classList.remove('active');
+                        }
+                    });
+                }
+
+                // Add click handlers for page indicators
+                pageIndicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => {
+                        const targetProgress = index * 0.25; // 0 for welcome, 0.25 for sales, 0.5 for contact, 0.75 for info
+                        if (window.updateAnimationProgress) {
+                            window.updateAnimationProgress(targetProgress);
+                        }
+                    });
+                });
+
+                function updateFromAnimationProgress() {
+                    const progress = window.animationProgress || 0;
+                    scrollIndicatorBar.style.height = `${Math.min(1, progress) * 100}%`;
+                    const opacity = Math.max(0, 1 - (progress / fadeThresholdTitle));
+                    mainTitle.style.opacity = opacity;
+                    
+                    // Show pages based on scroll position
+                    if (opacity <= 0.1) {
+                        updatePageVisibility(progress);
+                    } else {
+                        pages.forEach(page => page.classList.remove('active'));
+                    }
+                    
+                    updatePageIndicators(progress);
+                    currentProgress = progress;
+                    requestAnimationFrame(updateFromAnimationProgress);
+                }
+
+                updateFromAnimationProgress();
+            });
+
+            // Image modal (lightbox) functionality
+            document.addEventListener('DOMContentLoaded', () => {
+                const modalOverlay = document.getElementById('imageModalOverlay');
+                const modalImg = document.getElementById('imageModalImg');
+                const modalClose = document.getElementById('imageModalClose');
+                const imageContainers = document.querySelectorAll('.info-section-image img');
+
+                imageContainers.forEach(img => {
+                    img.addEventListener('click', (e) => {
+                        modalImg.src = img.src;
+                        modalImg.alt = img.alt;
+                        modalOverlay.classList.add('active');
+                    });
+                });
+
+                modalClose.addEventListener('click', () => {
+                    modalOverlay.classList.remove('active');
+                    modalImg.src = '';
+                });
+                modalOverlay.addEventListener('click', (e) => {
+                    if (e.target === modalOverlay) {
+                        modalOverlay.classList.remove('active');
+                        modalImg.src = '';
+                    }
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        modalOverlay.classList.remove('active');
+                        modalImg.src = '';
+                    }
+                });
+            });
+        </script>
+    </body>
+</html> 
