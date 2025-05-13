@@ -438,6 +438,22 @@
                 z-index: 1200;
                 opacity: 1;
                 pointer-events: none;
+                transition: all 0.3s ease;
+            }
+
+            .scroll-explore.first-page {
+                gap: 16px;
+            }
+
+            .scroll-explore.first-page .scroll-explore-text {
+                font-size: 16px;
+                letter-spacing: 2px;
+            }
+
+            .scroll-explore.first-page .scroll-explore-arrow {
+                width: 32px;
+                height: 32px;
+                border-width: 3px;
             }
 
             .scroll-explore-text {
@@ -446,6 +462,7 @@
                 font-weight: 500;
                 letter-spacing: 1px;
                 text-transform: uppercase;
+                transition: all 0.3s ease;
             }
 
             .scroll-explore-arrow {
@@ -455,6 +472,7 @@
                 border-bottom: 2px solid rgba(255,255,255,0.8);
                 transform: rotate(45deg);
                 animation: wiggle 2s infinite;
+                transition: all 0.3s ease;
             }
 
             @keyframes wiggle {
@@ -544,10 +562,11 @@
                 .main-title {
                     font-size: 48px;
                     letter-spacing: 4px;
+                    top: 40%;
                 }
 
                 .main-title.scrolled {
-                    top: 4%;
+                    top: 2%;
                     font-size: 24px;
                     letter-spacing: 2px;
                 }
@@ -582,6 +601,7 @@
                     right: 12px;
                     padding: 16px 8px;
                     gap: 16px;
+                    top: 60%;
                 }
 
                 .scroll-indicator-container {
@@ -606,7 +626,8 @@
 
                 .info-section-image {
                     width: 100%;
-                    height: 180px;
+                    height: 200px;
+                    order: -1;
                 }
 
                 .info-section h3 {
@@ -625,7 +646,7 @@
                 }
 
                 .scroll-explore {
-                    bottom: 30px;
+                    bottom: 20px;
                 }
 
                 .scroll-explore-text {
@@ -640,6 +661,15 @@
                 .page h2 {
                     font-size: 20px;
                     margin-bottom: 20px;
+                }
+
+                .info-content {
+                    padding: 0 20px;
+                    margin-top: 20px;
+                }
+
+                .page {
+                    top: 15%;
                 }
             }
 
@@ -661,10 +691,11 @@
                 .main-title {
                     font-size: 36px;
                     letter-spacing: 3px;
+                    top: 35%;
                 }
 
                 .main-title.scrolled {
-                    top: 8%;
+                    top: 2%;
                     font-size: 20px;
                     letter-spacing: 2px;
                 }
@@ -684,6 +715,7 @@
                     right: 8px;
                     padding: 12px 6px;
                     gap: 12px;
+                    top: 65%;
                 }
 
                 .scroll-indicator-container {
@@ -705,7 +737,7 @@
                 }
 
                 .info-section-image {
-                    height: 140px;
+                    height: 160px;
                 }
 
                 .info-section h3 {
@@ -723,7 +755,7 @@
                 }
 
                 .scroll-explore {
-                    bottom: 20px;
+                    bottom: 15px;
                 }
 
                 .scroll-explore-text {
@@ -742,6 +774,15 @@
 
                 .info-content {
                     gap: 16px;
+                    padding: 0 16px;
+                    margin-top: 15px;
+                }
+
+                .page {
+                    width: 100%;
+                    padding: 0 16px;
+                    box-sizing: border-box;
+                    top: 12%;
                 }
             }
 
@@ -797,6 +838,42 @@
             .image-modal-close:hover {
                 background: rgba(0,0,0,0.7);
             }
+
+            .back-to-top-button {
+                background: rgba(255,255,255,0.22);
+                border: 1.5px solid rgba(255,255,255,0.32);
+                color: white;
+                font-size: 20px;
+                font-weight: 700;
+                letter-spacing: 2px;
+                cursor: pointer;
+                transition: all 0.22s cubic-bezier(.4,1,.7,1);
+                box-shadow: 0 2px 12px 0 rgba(0,0,0,0.10);
+                border-radius: 24px;
+                padding: 16px 32px;
+                outline: none;
+                backdrop-filter: blur(12px) saturate(160%);
+            }
+
+            .back-to-top-button:hover {
+                background: rgba(255,255,255,0.32);
+                transform: translateY(-2px) scale(1.08);
+                color: #fff;
+            }
+
+            @media (max-width: 768px) {
+                .back-to-top-button {
+                    font-size: 18px;
+                    padding: 14px 28px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .back-to-top-button {
+                    font-size: 16px;
+                    padding: 12px 24px;
+                }
+            }
         </style>
     </head>
     <body>
@@ -833,6 +910,10 @@
                     <div class="page-indicator" data-page="4">
                         <div class="page-indicator-dot"></div>
                         <div class="page-indicator-label">INFO</div>
+                    </div>
+                    <div class="page-indicator" data-page="5">
+                        <div class="page-indicator-dot"></div>
+                        <div class="page-indicator-label">TOP</div>
                     </div>
                 </div>
                 <div class="scroll-indicator-container">
@@ -990,6 +1071,13 @@
                     </div>
                 </div>
             </div>
+            <div class="page" id="page5">
+                <div class="info-content" style="height: 100vh; display: flex; align-items: center; justify-content: center;">
+                    <button class="back-to-top-button" onclick="window.updateAnimationProgress(0)">
+                        BACK TO TOP
+                    </button>
+                </div>
+            </div>
             <div class="scroll-explore">
                 <div class="scroll-explore-text">Scroll to explore</div>
                 <div class="scroll-explore-arrow"></div>
@@ -1064,33 +1152,45 @@
                 let touchStartTime = 0;
                 let touchEndTime = 0;
                 let currentProgress = 0;
+                const screenHeight = window.innerHeight;
 
                 // Function to update page visibility
                 function updatePageVisibility(progress) {
-                    const pageThreshold1 = 0.25; // First threshold (Welcome -> Sales)
-                    const pageThreshold2 = 0.5;  // Second threshold (Sales -> Contact)
-                    const pageThreshold3 = 0.75; // Third threshold (Contact -> Info)
+                    const pageThreshold1 = 0.2; // First threshold (Welcome -> Sales)
+                    const pageThreshold2 = 0.4;  // Second threshold (Sales -> Contact)
+                    const pageThreshold3 = 0.6; // Third threshold (Contact -> Info)
+                    const pageThreshold4 = 0.8; // Fourth threshold (Info -> Top)
                     
                     if (progress < pageThreshold1) {
                         document.getElementById('page1').classList.add('active');
                         document.getElementById('page2').classList.remove('active');
                         document.getElementById('page3').classList.remove('active');
                         document.getElementById('page4').classList.remove('active');
+                        document.getElementById('page5').classList.remove('active');
                     } else if (progress < pageThreshold2) {
                         document.getElementById('page1').classList.remove('active');
                         document.getElementById('page2').classList.add('active');
                         document.getElementById('page3').classList.remove('active');
                         document.getElementById('page4').classList.remove('active');
+                        document.getElementById('page5').classList.remove('active');
                     } else if (progress < pageThreshold3) {
                         document.getElementById('page1').classList.remove('active');
                         document.getElementById('page2').classList.remove('active');
                         document.getElementById('page3').classList.add('active');
                         document.getElementById('page4').classList.remove('active');
-                    } else {
+                        document.getElementById('page5').classList.remove('active');
+                    } else if (progress < pageThreshold4) {
                         document.getElementById('page1').classList.remove('active');
                         document.getElementById('page2').classList.remove('active');
                         document.getElementById('page3').classList.remove('active');
                         document.getElementById('page4').classList.add('active');
+                        document.getElementById('page5').classList.remove('active');
+                    } else {
+                        document.getElementById('page1').classList.remove('active');
+                        document.getElementById('page2').classList.remove('active');
+                        document.getElementById('page3').classList.remove('active');
+                        document.getElementById('page4').classList.remove('active');
+                        document.getElementById('page5').classList.add('active');
                     }
                 }
 
@@ -1104,8 +1204,9 @@
                     const deltaY = touchStartY - touchEndY;
                     const screenHeight = window.innerHeight;
                     
-                    // Calculate progress based on touch movement
-                    const progressDelta = deltaY / (screenHeight * 2);
+                    // Reduce sensitivity for mobile
+                    const sensitivity = window.innerWidth <= 768 ? 0.5 : 1;
+                    const progressDelta = (deltaY / (screenHeight * 2)) * sensitivity;
                     const newProgress = Math.max(0, Math.min(1, currentProgress + progressDelta));
                     
                     // Update animation progress
@@ -1122,7 +1223,9 @@
                     const swipeDistance = touchEndY - touchStartY;
                     
                     if (touchDuration < 300 && Math.abs(swipeDistance) > 50) {
-                        const momentum = swipeDistance / (screenHeight * 2);
+                        // Reduce momentum for mobile
+                        const sensitivity = window.innerWidth <= 768 ? 0.5 : 1;
+                        const momentum = (swipeDistance / (screenHeight * 2)) * sensitivity;
                         const targetProgress = Math.max(0, Math.min(1, currentProgress + momentum));
                         
                         const startProgress = currentProgress;
@@ -1153,15 +1256,17 @@
 
                 // Update page indicators based on scroll progress
                 function updatePageIndicators(progress) {
-                    const pageThreshold1 = 0.25;
-                    const pageThreshold2 = 0.5;
-                    const pageThreshold3 = 0.75;
+                    const pageThreshold1 = 0.2;
+                    const pageThreshold2 = 0.4;
+                    const pageThreshold3 = 0.6;
+                    const pageThreshold4 = 0.8;
                     
                     pageIndicators.forEach((indicator, index) => {
                         if ((index === 0 && progress < pageThreshold1) || 
                             (index === 1 && progress >= pageThreshold1 && progress < pageThreshold2) ||
                             (index === 2 && progress >= pageThreshold2 && progress < pageThreshold3) ||
-                            (index === 3 && progress >= pageThreshold3)) {
+                            (index === 3 && progress >= pageThreshold3 && progress < pageThreshold4) ||
+                            (index === 4 && progress >= pageThreshold4)) {
                             indicator.classList.add('active');
                         } else {
                             indicator.classList.remove('active');
@@ -1179,6 +1284,15 @@
                     });
                 });
 
+                function updateScrollExplore() {
+                    const progress = window.animationProgress || 0;
+                    if (progress < 0.25) {  // First page threshold
+                        document.querySelector('.scroll-explore').classList.add('first-page');
+                    } else {
+                        document.querySelector('.scroll-explore').classList.remove('first-page');
+                    }
+                }
+
                 function updateFromAnimationProgress() {
                     const progress = window.animationProgress || 0;
                     scrollIndicatorBar.style.height = `${Math.min(1, progress) * 100}%`;
@@ -1193,6 +1307,7 @@
                     }
                     
                     updatePageIndicators(progress);
+                    updateScrollExplore();
                     currentProgress = progress;
                     requestAnimationFrame(updateFromAnimationProgress);
                 }
