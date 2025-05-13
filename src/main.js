@@ -44,7 +44,7 @@ const pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
 
 const exrLoader = new EXRLoader();
-exrLoader.load("textures/exr/clearsky.exr", (texture) => {
+exrLoader.load("/textures/exr/clearsky.exr", (texture) => {
   const envMap = pmremGenerator.fromEquirectangular(texture).texture;
   scene.environment = envMap; // Set environment for reflections
   scene.background = envMap; // Set EXR as background
