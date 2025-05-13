@@ -1,11 +1,11 @@
-import * as THREE from "https://unpkg.com/three@0.155.0/build/three.module.js";
-import { OrbitControls } from "https://unpkg.com/three@0.155.0/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "https://unpkg.com/three@0.155.0/examples/jsm/loaders/GLTFLoader.js";
-import { EffectComposer } from "https://unpkg.com/three@0.155.0/examples/jsm/postprocessing/EffectComposer.js";
-import { RenderPass } from "https://unpkg.com/three@0.155.0/examples/jsm/postprocessing/RenderPass.js";
-import { UnrealBloomPass } from "https://unpkg.com/three@0.155.0/examples/jsm/postprocessing/UnrealBloomPass.js";
-import { EXRLoader } from "https://unpkg.com/three@0.155.0/examples/jsm/loaders/EXRLoader.js";
-import { Color } from "https://unpkg.com/three@0.155.0/build/three.module.js";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
+import { Color } from "three";
 
 // Create scene
 const scene = new THREE.Scene();
@@ -55,7 +55,7 @@ exrLoader.load("textures/exr/clearsky.exr", (texture) => {
 // Load main model ------------------------------------------------------------------Axel bara mesh
 const loader = new GLTFLoader();
 loader.load(
-  "models/gamstan12.glb",
+  "/models/gamstan19.glb",
   (gltf) => {
     const model = gltf.scene;
     model.traverse((child) => {
@@ -64,10 +64,14 @@ loader.load(
       }
     });
     scene.add(model);
+    console.log("Model loaded successfully");
   },
-  (xhr) =>
-    console.log(`Loading: ${Math.round((xhr.loaded / xhr.total) * 100)}%`),
-  (error) => console.error("Error loading model", error),
+  (xhr) => {
+    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+  },
+  (error) => {
+    console.error('An error happened while loading the model:', error);
+  }
 );
 
 // Setup Post-Processing
@@ -114,7 +118,7 @@ document.addEventListener("wheel", (event) => {
 });
 
 // Load GLB camera model with animation ------------------------ BARA CAMERA Animation INGET ANNAT!!!!!
-loader.load("models/gamcamera6.glb", (gltf) => {
+loader.load("/models/gamcamera6.glb", (gltf) => {
   if (gltf.cameras.length > 0) {
     camera = gltf.cameras[0]; // Assign the loaded camera
     renderer.setSize(window.innerWidth, window.innerHeight);
