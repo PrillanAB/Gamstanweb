@@ -4,6 +4,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass";
 import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
 import { Color } from "three";
 
@@ -19,9 +20,18 @@ let camera = new THREE.PerspectiveCamera(
 );
 camera.position.set(0, 2, 5);
 
-// Create renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+// Create renderer with enhanced antialiasing
+const renderer = new THREE.WebGLRenderer({ 
+  antialias: true,
+  powerPreference: "high-performance",
+  stencil: false,
+  depth: true
+});
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for performance
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
 document.body.appendChild(renderer.domElement);
 
 // Add OrbitControls
@@ -74,9 +84,17 @@ loader.load(
   }
 );
 
-// Setup Post-Processing
+// Setup Post-Processing with enhanced antialiasing
 const composer = new EffectComposer(renderer);
 let renderScene = new RenderPass(scene, camera);
+
+// Add SMAA antialiasing
+const smaaPass = new SMAAPass(
+  window.innerWidth * renderer.getPixelRatio(),
+  window.innerHeight * renderer.getPixelRatio()
+);
+
+// Add bloom effect
 const bloomPass = new UnrealBloomPass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
   1.5,
@@ -87,7 +105,9 @@ bloomPass.threshold = 1.2;
 bloomPass.strength = 0.5;
 bloomPass.radius = 0.8;
 
+// Add passes to composer
 composer.addPass(renderScene);
+composer.addPass(smaaPass); // Add SMAA before bloom
 composer.addPass(bloomPass);
 
 // Animation handling
@@ -132,32 +152,115 @@ loader.load("./models/gamcamera6.glb", (gltf) => {
     const baseRotation = new THREE.Euler();
 
     // Movement restrictions
-    const maxPanAmount = 0.05; // Reduced from 0.1
-    const maxRotationAmount = 0.02; // Reduced from 0.05
-    const smoothFactor = 0.1; // For smooth interpolation
-    const returnFactor = 0.02; // Speed of return to center
+    const maxPanAmount = 0.02;
+    const maxRotationAmount = 0.01;
+    const smoothFactor = 0.08;
+    const returnFactor = 0.015;
+    const maxPanDistance = 0.03;
+    const maxRotationDistance = 0.015;
     let targetPanX = 0;
     let targetPanY = 0;
     let targetRotX = 0;
     let targetRotY = 0;
-    let lastMouseMove = Date.now();
-    const mouseInactiveThreshold = 100; // Time in ms before starting return to center
+    let lastMoveTime = Date.now();
+    const inactiveThreshold = 100;
 
-    // Add mouse move event listener for camera panning
-    document.addEventListener('mousemove', (event) => {
-      // Calculate mouse position relative to center of screen (-1 to 1)
-      const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-      const mouseY = -((event.clientY / window.innerHeight) * 2 - 1);
+    // Gyroscope variables
+    let isGyroAvailable = false;
+    let initialGamma = null;
+    let initialBeta = null;
+    const gyroSensitivity = 0.02; // Adjust this value to control gyro sensitivity
 
-      // Calculate target positions with reduced sensitivity
-      targetPanX = mouseX * maxPanAmount;
-      targetPanY = mouseY * maxPanAmount;
-      targetRotX = mouseY * maxRotationAmount;
-      targetRotY = mouseX * maxRotationAmount;
+    // Function to handle gyroscope data
+    function handleGyro(event) {
+      if (!isGyroAvailable) return;
 
-      // Update last mouse movement time
-      lastMouseMove = Date.now();
-    });
+      // Get the current orientation
+      const gamma = event.gamma; // Left to right tilt
+      const beta = event.beta;   // Front to back tilt
+
+      // Initialize reference values if not set
+      if (initialGamma === null || initialBeta === null) {
+        initialGamma = gamma;
+        initialBeta = beta;
+        return;
+      }
+
+      // Calculate the difference from initial position
+      const deltaGamma = (gamma - initialGamma) * gyroSensitivity;
+      const deltaBeta = (beta - initialBeta) * gyroSensitivity;
+
+      // Update target positions
+      targetPanX = -deltaGamma * maxPanAmount;
+      targetPanY = -deltaBeta * maxPanAmount;
+      targetRotX = -deltaBeta * maxRotationAmount;
+      targetRotY = -deltaGamma * maxRotationAmount;
+
+      // Clamp the values
+      targetPanX = Math.max(-maxPanDistance, Math.min(maxPanDistance, targetPanX));
+      targetPanY = Math.max(-maxPanDistance, Math.min(maxPanDistance, targetPanY));
+      targetRotX = Math.max(-maxRotationDistance, Math.min(maxRotationDistance, targetRotX));
+      targetRotY = Math.max(-maxRotationDistance, Math.min(maxRotationDistance, targetRotY));
+
+      lastMoveTime = Date.now();
+    }
+
+    // Request gyroscope permission and setup
+    if (typeof DeviceOrientationEvent !== 'undefined' && 
+        typeof DeviceOrientationEvent.requestPermission === 'function') {
+      // iOS 13+ requires permission
+      document.addEventListener('click', function requestGyro() {
+        DeviceOrientationEvent.requestPermission()
+          .then(response => {
+            if (response === 'granted') {
+              isGyroAvailable = true;
+              window.addEventListener('deviceorientation', handleGyro);
+            }
+          })
+          .catch(console.error);
+        document.removeEventListener('click', requestGyro);
+      });
+    } else {
+      // Android and other devices
+      window.addEventListener('deviceorientation', (event) => {
+        if (event.gamma !== null && event.beta !== null) {
+          isGyroAvailable = true;
+          handleGyro(event);
+        }
+      });
+    }
+
+    // Add mouse move event listener for camera panning (desktop only)
+    if (!isMobileDevice()) {
+      document.addEventListener('mousemove', (event) => {
+        // Calculate mouse position relative to center of screen (-1 to 1)
+        const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+        const mouseY = -((event.clientY / window.innerHeight) * 2 - 1);
+
+        // Apply non-linear scaling for more precise control near center
+        const scaledMouseX = Math.sign(mouseX) * Math.pow(Math.abs(mouseX), 1.5);
+        const scaledMouseY = Math.sign(mouseY) * Math.pow(Math.abs(mouseY), 1.5);
+
+        // Calculate target positions with reduced sensitivity
+        targetPanX = scaledMouseX * maxPanAmount;
+        targetPanY = scaledMouseY * maxPanAmount;
+        targetRotX = scaledMouseY * maxRotationAmount;
+        targetRotY = scaledMouseX * maxRotationAmount;
+
+        // Clamp the values to maximum distances
+        targetPanX = Math.max(-maxPanDistance, Math.min(maxPanDistance, targetPanX));
+        targetPanY = Math.max(-maxPanDistance, Math.min(maxPanDistance, targetPanY));
+        targetRotX = Math.max(-maxRotationDistance, Math.min(maxRotationDistance, targetRotX));
+        targetRotY = Math.max(-maxRotationDistance, Math.min(maxRotationDistance, targetRotY));
+
+        lastMoveTime = Date.now();
+      });
+    }
+
+    // Helper function to detect mobile devices
+    function isMobileDevice() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
 
     // Add animation frame update for smooth movement
     function updateCameraPosition() {
@@ -165,9 +268,9 @@ loader.load("./models/gamcamera6.glb", (gltf) => {
       basePosition.copy(camera.position);
       baseRotation.copy(camera.rotation);
 
-      // Check if mouse has been inactive
+      // Check if device has been inactive
       const now = Date.now();
-      if (now - lastMouseMove > mouseInactiveThreshold) {
+      if (now - lastMoveTime > inactiveThreshold) {
         // Gradually return to center
         targetPanX *= (1 - returnFactor);
         targetPanY *= (1 - returnFactor);
@@ -217,18 +320,29 @@ loader.load("./models/gamcamera6.glb", (gltf) => {
   scene.add(gltf.scene);
 });
 
-// Handle window resizing
+// Handle window resizing with proper antialiasing
 window.addEventListener("resize", () => {
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  // Update camera
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
+
+  // Update renderer
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // Update composer
   composer.setSize(window.innerWidth, window.innerHeight);
+  composer.passes.forEach(pass => {
+    if (pass.setSize) {
+      pass.setSize(window.innerWidth, window.innerHeight);
+    }
+  });
 });
 
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
-  composer.render();
+  composer.render(); // Use composer instead of renderer
 }
 animate();
