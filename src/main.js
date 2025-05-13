@@ -127,6 +127,76 @@ loader.load("./models/gamcamera6.glb", (gltf) => {
     composer.setSize(window.innerWidth, window.innerHeight);
     console.log("Using GLB camera");
 
+    // Store the base position and rotation
+    const basePosition = new THREE.Vector3();
+    const baseRotation = new THREE.Euler();
+
+    // Movement restrictions
+    const maxPanAmount = 0.05; // Reduced from 0.1
+    const maxRotationAmount = 0.02; // Reduced from 0.05
+    const smoothFactor = 0.1; // For smooth interpolation
+    const returnFactor = 0.02; // Speed of return to center
+    let targetPanX = 0;
+    let targetPanY = 0;
+    let targetRotX = 0;
+    let targetRotY = 0;
+    let lastMouseMove = Date.now();
+    const mouseInactiveThreshold = 100; // Time in ms before starting return to center
+
+    // Add mouse move event listener for camera panning
+    document.addEventListener('mousemove', (event) => {
+      // Calculate mouse position relative to center of screen (-1 to 1)
+      const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+      const mouseY = -((event.clientY / window.innerHeight) * 2 - 1);
+
+      // Calculate target positions with reduced sensitivity
+      targetPanX = mouseX * maxPanAmount;
+      targetPanY = mouseY * maxPanAmount;
+      targetRotX = mouseY * maxRotationAmount;
+      targetRotY = mouseX * maxRotationAmount;
+
+      // Update last mouse movement time
+      lastMouseMove = Date.now();
+    });
+
+    // Add animation frame update for smooth movement
+    function updateCameraPosition() {
+      // Get the current animated position
+      basePosition.copy(camera.position);
+      baseRotation.copy(camera.rotation);
+
+      // Check if mouse has been inactive
+      const now = Date.now();
+      if (now - lastMouseMove > mouseInactiveThreshold) {
+        // Gradually return to center
+        targetPanX *= (1 - returnFactor);
+        targetPanY *= (1 - returnFactor);
+        targetRotX *= (1 - returnFactor);
+        targetRotY *= (1 - returnFactor);
+      }
+
+      // Smoothly interpolate to target positions
+      const currentPanX = camera.position.x - basePosition.x;
+      const currentPanY = camera.position.y - basePosition.y;
+      const currentRotX = camera.rotation.x - baseRotation.x;
+      const currentRotY = camera.rotation.y - baseRotation.y;
+
+      // Apply smooth interpolation
+      camera.position.x = basePosition.x + currentPanX + (targetPanX - currentPanX) * smoothFactor;
+      camera.position.y = basePosition.y + currentPanY + (targetPanY - currentPanY) * smoothFactor;
+      camera.rotation.x = baseRotation.x + currentRotX + (targetRotX - currentRotX) * smoothFactor;
+      camera.rotation.y = baseRotation.y + currentRotY + (targetRotY - currentRotY) * smoothFactor;
+
+      // Update the camera
+      camera.updateProjectionMatrix();
+
+      // Continue the animation loop
+      requestAnimationFrame(updateCameraPosition);
+    }
+
+    // Start the smooth movement update
+    updateCameraPosition();
+
     // Update RenderPass with the new camera
     renderScene = new RenderPass(scene, camera);
     composer.passes[0] = renderScene;
