@@ -425,22 +425,6 @@
                 mix-blend-mode: lighten;
             }
 
-            .koneqt-label {
-                position: fixed;
-                top: 32px;
-                right: 40px;
-                font-size: 2rem;
-                font-weight: 700;
-                color: #fff;
-                letter-spacing: 2px;
-                opacity: 0.85;
-                z-index: 1200;
-                pointer-events: none;
-                user-select: none;
-                text-shadow: 0 2px 8px rgba(0,0,0,0.18);
-                font-family: 'Inter', Arial, sans-serif;
-            }
-
             .scroll-explore {
                 position: fixed;
                 bottom: 40px;
@@ -557,12 +541,13 @@
                 }
 
                 .main-title {
-                    font-size: 60px;
+                    font-size: 48px;
+                    letter-spacing: 4px;
                 }
 
                 .main-title.scrolled {
                     top: 4%;
-                    font-size: 28px;
+                    font-size: 24px;
                     letter-spacing: 2px;
                 }
 
@@ -582,17 +567,14 @@
                 }
 
                 .loading-title {
-                    font-size: 60px;
+                    font-size: 48px;
+                    letter-spacing: 4px;
                 }
 
                 .progress-text {
-                    font-size: 24px;
-                }
-
-                .koneqt-label {
-                    font-size: 1.5rem;
-                    top: 20px;
-                    right: 20px;
+                    font-size: 20px;
+                    bottom: 40px;
+                    left: 40px;
                 }
 
                 .scroll-section {
@@ -603,7 +585,7 @@
 
                 .scroll-indicator-container {
                     width: 6px;
-                    height: 240px;
+                    height: 200px;
                 }
 
                 .page-indicator-dot {
@@ -618,11 +600,45 @@
                 .info-section {
                     flex-direction: column;
                     gap: 15px;
+                    padding: 20px;
                 }
 
                 .info-section-image {
                     width: 100%;
-                    height: 140px;
+                    height: 180px;
+                }
+
+                .info-section h3 {
+                    font-size: 20px;
+                    margin-bottom: 12px;
+                }
+
+                .info-section p {
+                    font-size: 15px;
+                    line-height: 1.5;
+                }
+
+                .tech-tag {
+                    font-size: 11px;
+                    padding: 4px 10px;
+                }
+
+                .scroll-explore {
+                    bottom: 30px;
+                }
+
+                .scroll-explore-text {
+                    font-size: 12px;
+                }
+
+                .scroll-explore-arrow {
+                    width: 20px;
+                    height: 20px;
+                }
+
+                .page h2 {
+                    font-size: 20px;
+                    margin-bottom: 20px;
                 }
             }
 
@@ -631,25 +647,100 @@
                     flex-wrap: wrap;
                     justify-content: center;
                     width: 90%;
+                    gap: 8px;
                 }
 
                 .dock-button {
-                    flex: 1 1 calc(50% - 12px);
+                    flex: 1 1 calc(50% - 8px);
                     min-width: 0;
+                    padding: 6px 12px;
+                    font-size: 13px;
                 }
 
                 .main-title {
-                    font-size: 40px;
+                    font-size: 36px;
+                    letter-spacing: 3px;
                 }
 
                 .main-title.scrolled {
                     top: 8%;
-                    font-size: 40px;
-                    letter-spacing: 3px;
+                    font-size: 20px;
+                    letter-spacing: 2px;
                 }
 
                 .loading-title {
-                    font-size: 40px;
+                    font-size: 36px;
+                    letter-spacing: 3px;
+                }
+
+                .progress-text {
+                    font-size: 18px;
+                    bottom: 30px;
+                    left: 30px;
+                }
+
+                .scroll-section {
+                    right: 8px;
+                    padding: 12px 6px;
+                    gap: 12px;
+                }
+
+                .scroll-indicator-container {
+                    width: 4px;
+                    height: 160px;
+                }
+
+                .page-indicator-dot {
+                    width: 4px;
+                    height: 4px;
+                }
+
+                .page-indicator-label {
+                    font-size: 10px;
+                }
+
+                .info-section {
+                    padding: 16px;
+                }
+
+                .info-section-image {
+                    height: 140px;
+                }
+
+                .info-section h3 {
+                    font-size: 18px;
+                    margin-bottom: 10px;
+                }
+
+                .info-section p {
+                    font-size: 14px;
+                }
+
+                .tech-tag {
+                    font-size: 10px;
+                    padding: 3px 8px;
+                }
+
+                .scroll-explore {
+                    bottom: 20px;
+                }
+
+                .scroll-explore-text {
+                    font-size: 11px;
+                }
+
+                .scroll-explore-arrow {
+                    width: 16px;
+                    height: 16px;
+                }
+
+                .page h2 {
+                    font-size: 18px;
+                    margin-bottom: 16px;
+                }
+
+                .info-content {
+                    gap: 16px;
                 }
             }
 
@@ -898,7 +989,6 @@
                     </div>
                 </div>
             </div>
-            <div class="koneqt-label">koneqt</div>
             <div class="scroll-explore">
                 <div class="scroll-explore-text">Scroll to explore</div>
                 <div class="scroll-explore-arrow"></div>
