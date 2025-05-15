@@ -151,6 +151,7 @@
                 display: flex;
                 gap: 25px;
                 align-items: flex-start;
+                text-align: left;
             }
 
             .info-section:hover {
@@ -160,6 +161,7 @@
 
             .info-section-content {
                 flex: 1;
+                text-align: left;
             }
 
             .info-section-image {
@@ -212,6 +214,7 @@
                 visibility: visible;
                 position: relative;
                 z-index: 1003;
+                text-align: left;
             }
 
             .info-section p {
@@ -223,6 +226,7 @@
                 visibility: visible;
                 position: relative;
                 z-index: 1003;
+                text-align: left;
             }
 
             .tech-stack {
@@ -234,6 +238,7 @@
                 visibility: visible;
                 position: relative;
                 z-index: 1003;
+                justify-content: flex-start;
             }
 
             .tech-tag {
@@ -405,9 +410,29 @@
                 z-index: 1000;
                 width: 80%;
                 max-width: 1000px;
-                text-align: center;
+                text-align: left;
                 visibility: visible;
                 display: block;
+            }
+
+            .page h2 {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+
+            .info-content {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+                margin-top: 30px;
+                opacity: 1;
+                visibility: visible;
+                position: relative;
+                z-index: 1001;
+                max-width: 1400px;
+                margin-left: auto;
+                margin-right: auto;
+                text-align: left;
             }
 
             .page.active {
@@ -524,20 +549,6 @@
 
             .page-indicator.active .page-indicator-label {
                 color: #fff;
-            }
-
-            .info-content {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 30px;
-                margin-top: 30px;
-                opacity: 1;
-                visibility: visible;
-                position: relative;
-                z-index: 1001;
-                max-width: 1400px;
-                margin-left: auto;
-                margin-right: auto;
             }
 
             @media (max-width: 1200px) {
@@ -1572,8 +1583,8 @@
                     }
                     
                     if (isScrolling) {
-                        // Reduce sensitivity for mobile
-                        const sensitivity = window.innerWidth <= 768 ? 0.5 : 1;
+                        // Reduce sensitivity for mobile - adjusted from 0.5 to 0.25
+                        const sensitivity = window.innerWidth <= 768 ? 0.25 : 1;
                         const progressDelta = (deltaY / (screenHeight * 2)) * sensitivity;
                         const newProgress = Math.max(0, Math.min(1, currentProgress + progressDelta));
                         
@@ -1593,8 +1604,8 @@
                     
                     // Only trigger momentum if we were actually scrolling
                     if (isScrolling && touchDuration < 300 && Math.abs(swipeDistance) > 50) {
-                        // Reduce momentum for mobile
-                        const sensitivity = window.innerWidth <= 768 ? 0.5 : 1;
+                        // Reduce momentum for mobile - adjusted from 0.5 to 0.3
+                        const sensitivity = window.innerWidth <= 768 ? 0.3 : 1;
                         const momentum = (swipeDistance / (screenHeight * 2)) * sensitivity;
                         const targetProgress = Math.max(0, Math.min(1, currentProgress + momentum));
                         
